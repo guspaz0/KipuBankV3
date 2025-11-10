@@ -94,7 +94,7 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
     error UnsupportedToken(address _token);
 
     /// @notice Error personalizado para manejo de errores en el limite de retiro
-    error WithdrawalLimitExceeded(address caller, uint256 attemptedWithdrawal);
+    error WithdrawalLimitExceeded(uint256 _withdrawLimit, uint256 _attemptedWithdrawal);
 
     /// @notice Error personalizado para manejo de errores en los depositos
     error DepositAmountMismatch(
@@ -102,9 +102,6 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
         uint256 expectedValue,
         uint256 _amount
     );
-
-    /// @notice Error personalizado para manejo de errores en el los depositos
-    error DepositFailed(address caller, uint256 value);
 
     /// @notice Error personalizado para manejo de errores en el los depositos fallbacks (receive)
     error ReceiveFallbackDepositError(address caller, uint256 value);
@@ -114,18 +111,6 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
 
     /// @notice Error personalizado para manejo de errores en los parametros del constructor
     error ConstructorError(string parameter);
-
-    ///@notice error emitido cuando el oracle devuelve un valor incorrecto
-    error OracleCompromised();
-
-    ///@notice error emitido cuando la ultima actualización del oraculo es mayor que el heartbeat
-    error StalePrice();
-    
-    ///@notice error emitted if the user inputs multiple tokens
-    error SwapModule_MultipleTokenInputsAreNotAllowed(address native, address tokenIn);
-    
-    ///@notice error emitted if the native token transfer fails
-    error SwapModule_TransactionFailed(bytes data);
 
     /*//////////////////////////////
             Eventos
@@ -355,6 +340,7 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
             revert ZeroAmount();
         uint256 bal = balanceOfUsdc[msg.sender];
         if (bal < _amountUsdc) revert InsufficientUserBalance(_amountUsdc, bal);
+        if (_amountUsdc > withdrawLimitUSD) revert WithdrawalLimitExceeded(withdrawLimitUSD,_amountUsdc);
         unchecked {
             balanceOfUsdc[msg.sender] = bal - _amountUsdc;
             totalUsdc -= _amountUsdc;

@@ -182,7 +182,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
     // -------- Withdraw --------
     function testWithdraws_usdc_Success_Emits() public {
         uint256 deposit = 2_000e6;
-        uint256 withdraw = 500e6;
+        uint256 withdraw = 1000;
         vm.startPrank(user1);
         bank.deposit(address(s_usdc),deposit, s_minOut, s_deadline);
 
@@ -214,6 +214,20 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
             )
         );
         bank.withdraw(200e6);
+        vm.stopPrank();
+    }
+
+    function testWithdraws_usdc_Revert_Limit() public {
+        vm.startPrank(user1);
+        bank.deposit(address(s_usdc), 100e6, s_minOut, s_deadline);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                KipuBankV3.WithdrawalLimitExceeded.selector,
+                bank.withdrawLimitUSD(),
+                2000
+            )
+        );
+        bank.withdraw(2000);
         vm.stopPrank();
     }
 
