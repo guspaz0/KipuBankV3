@@ -35,19 +35,13 @@ abstract contract KipuBankV3BaseTest is Test {
     //@notice Parametros de CL Feeds
     uint8 constant DECIMALS = 6;
     int256 constant INITIAL_ANSWER = 2500 * 10 ** 8;
-    // ------ conversion --------
-    // dado que 1 USDC = 250,000,000,000 wei
-    // y dado que 1 ETH = 1,000,000,000,000,000,000 wei
-    // entonces 1 USDC = 0.00025 ETH 
-    uint256 constant ONE_ETHER_TO_USD = 4000;
-    uint256 constant ONE_USD_TO_WEI = 0.00025 ether;
 
-    uint256 constant BANK_CAP = 10000; // Banco Capacidad en USD 4000 o 1 ETH
+    uint256 constant BANK_CAP = 1_000_000e6;
 
     uint256 constant ETHER_INITIAL_BALANCE = 2 ether; // 40 million USD
     address constant ETH_ADDRESS = address(0);
 
-    uint256 constant USDC_INITIAL_BALANCE = 10_000 * 10 ** 6;
+    uint256 constant USDC_INITIAL_BALANCE = 10_000_000 * 10 ** 6;
 
     /*////////////////////////////////////
             * ENVIRONMENT SETUP * 

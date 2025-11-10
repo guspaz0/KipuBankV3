@@ -2,7 +2,7 @@ name: Foundry CI/CD
 on:
   push:
     branches:
-      - develop-foundry
+      - develop
   pull_request:
 
 jobs:

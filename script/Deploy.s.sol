@@ -20,9 +20,9 @@ contract DeployKipuBankV3 is Script {
         console.log("==================================");
         console.log("Deploying KipuBankV3...");
         console.log("==================================");
-        console.log("ETH/USD Price Feed:", ethUsdPriceFeed);
-        console.log("UniswapV2 Router:", router);
-        console.log("Bank Cap (USDC):", bankCap);
+        console.log("ETH/USD Price Feed:        ", ethUsdPriceFeed);
+        console.log("UniswapV2 Router:          ", router);
+        console.log("Bank Cap (USDC):           ", bankCap);
         console.log("==================================");
 
         vm.stopBroadcast();
@@ -30,7 +30,7 @@ contract DeployKipuBankV3 is Script {
         console.log("==================================");
         console.log("Deployment Successful!");
         console.log("==================================");
-        console.log("KipuBankV3 deployed at:", address(bank));
+        console.log("KipuBankV3 deployed at:    ", address(bank));
         console.log("==================================");
         console.log("\nNext Steps:");
         console.log("1. Wait for block confirmations");
