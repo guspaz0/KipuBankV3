@@ -20,9 +20,6 @@
       "rev": "fcbae5394ae8ad52d8e580a3477db99814b9d565"
     }
   },
-  "lib/permit2": {
-    "rev": "cc56ad0f3439c502c246fc5cfcc3db92bb8b7219"
-  },
   "lib/swap-router-contracts": {
     "tag": {
       "name": "v1.3.0",
@@ -41,13 +38,7 @@
       "rev": "4dd59067c76dea4a0e8e4bfdda41877a6b16dedc"
     }
   },
-  "lib/v3-core": {
-    "tag": {
-      "name": "v1.0.0",
-      "rev": "e3589b192d0be27e100cd0daaf6c97204fdb1899"
-    }
-  },
-  "lib/v4-periphery": {
-    "rev": "3779387e5d296f39df543d23524b050f89a62917"
+  "lib/v2-periphery": {
+    "rev": "0335e8f7e1bd1e8d8329fd300aea2ef2f36dd19f"
   }
 }

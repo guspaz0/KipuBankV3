@@ -31,3 +31,5 @@
 !/.env
 .env
 node_modules
+
+/lib
