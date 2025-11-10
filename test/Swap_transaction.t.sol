@@ -65,31 +65,31 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
     }
 
     // -------- Depósito ETH --------
-    // function testDepositEth_Success_Emits() public {
-    //     uint256 ethIn = 0.000000001 ether; // 2 ETH * 3000 = 6000 s_usdc
-    //     uint256 minOut = ethIn * 3601;
+    function testDepositEth_Success_Emits() public {
+        uint256 ethIn = 1e3; // 4e6 usdc
+        uint256 minOut = ethIn * 3601;
 
-    //     uint256 s_usdcBefore = s_usdc.balanceOf(address(bank));
-    //     vm.startPrank(user1);
-    //     vm.expectEmit(true, true, false, true);
-    //     // user, tokenIn(0), amountIn, s_usdcReceived (match on topics/data)
-    //     emit KipuBankV3.DepositSwapped(user1, address(0), ethIn, 0);
-    //     bank.deposit{value: ethIn}(address(0), ethIn, minOut, s_deadline);
+        uint256 s_usdcBefore = s_usdc.balanceOf(address(bank));
+        vm.startPrank(user1);
+        vm.expectEmit();
+        // user, tokenIn(0), amountIn, s_usdcReceived (match on topics/data)
+        emit KipuBankV3.DepositSwapped(user1, address(0), ethIn, 4e6);
+        bank.deposit{value: ethIn}(address(0), ethIn, minOut, s_deadline);
 
-    //     uint256 received = s_usdc.balanceOf(address(bank)) - s_usdcBefore;
+        uint256 received = s_usdc.balanceOf(address(bank)) - s_usdcBefore;
 
-    //     assertEq(received, 3601);
-    //     assertEq(bank.balanceOfUsdc(user1), received);
-    //     assertEq(bank.totalUsdc(), received);
-    // }
+        assertEq(received, 4e6);
+        assertEq(bank.balanceOfUsdc(user1), received);
+        assertEq(bank.totalUsdc(), received);
+    }
 
-    // function testDepositEth_Revert_Slippage() public {
-    //     uint256 ethIn = 1 ether; // 3000 s_usdc
-    //     uint256 minOut = 3_500e6; // mayor a lo que da el rate
-    //     vm.prank(user1);
-    //     vm.expectRevert(bytes("slip"));
-    //     bank.deposit{value: ethIn}(address(0), ethIn, minOut, block.timestamp + 1 hours);
-    // }
+    function testDepositEth_Revert_Slippage() public {
+        uint256 ethIn = 1e3; // 3000 s_usdc
+        uint256 minOut = 3_500e6; // mayor a lo que da el rate
+        vm.prank(user1);
+        vm.expectRevert(bytes("slip"));
+        bank.deposit{value: ethIn}(address(0), ethIn, minOut, block.timestamp + 1 hours);
+    }
 
     function testDepositEth_Revert_ZeroAmount() public {
         vm.prank(user1);
@@ -157,16 +157,16 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         bank.deposit(address(s_dai), 0, 0, block.timestamp + 1 hours);
     }
 
-    // function testDepositToken_Revert_Slippage() public {
-    //     vm.prank(user1);
-    //     vm.expectRevert(bytes("slip"));
-    //     bank.deposit(
-    //         address(s_dai),
-    //         100e18,
-    //         200e6,
-    //         block.timestamp + 1 hours
-    //     );
-    // }
+    function testDepositToken_Revert_Slippage() public {
+        vm.prank(user1);
+        vm.expectRevert(bytes("slip"));
+        bank.deposit(
+            address(s_dai),
+            1e3,
+            200e6,
+            block.timestamp + 1 hours
+        );
+    }
 
     function testDepositToken_Revert_CapExceeded_Precheck() public {
         vm.startPrank(user1);
