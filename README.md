@@ -1,71 +1,82 @@
-# KipuBankV2 Smart Contract
+# KipuBankV3 Smart Contract
 
-## Descripción
-KipuBankV3 es un contrato inteligente diseñado para gestionar un banco simple donde los usuarios pueden depositar y retirar ETH. Este contrato permite múltiples tokens ERC-20 y utiliza Chainlink para obtener precios de mercado.
+- [Deploy contrato sepolia testnet](https://sepolia.etherscan.io/address/0x69c9f23c46005efd796ea32e4e085a0b59d68a76)
+- Contract address: `0x69c9f23C46005eFD796ea32e4E085A0B59d68A76`
 
-## Características
+## Descripción General
 
-### Depósitos
-- **ETH:** Los usuarios pueden depositar ETH directamente.
-- **Tokens ERC-20:** Los usuarios pueden depositar tokens permitidos.
+KipuBankV3 es un contrato inteligente de Solidity que permite a los usuarios depositar y retirar ETH, tokens ERC20 y USDC a través de Uniswap V2. También incluye funciones administrativas exclusivas para el propietario para actualizar direcciones críticas.
 
-### Retiros
-- **ETH:** Los usuarios pueden retirar ETH, con un límite por transacción para evitar retiros excesivos.
-- **Tokens ERC-20:** Los usuarios pueden retirar tokens permitidos.
+### Características Clave
+- Depositar ETH, Tokens ERC20 o USDC en el contrato.
+- Retirar fondos en USDC.
+- Ownable: Solo el propietario puede actualizar configuraciones críticas como el router de Uniswap y la dirección de USDC.
+- SafeERC20 para transferencias de tokens seguras.
 
-### Gestión de Tokens
-- **Agregar Tokens:** El propietario puede agregar nuevos tokens al catálogo y asignarles feeds de precios Chainlink.
-- **Consultas de Precio:** Utiliza Chainlink para obtener precios en tiempo real de ETH/USD y otros pares.
+## Uso
 
-### Seguridad
-- **Reentrancy Guard:** Protección contra ataques de reentradas.
-- **Owner:** Solo el propietario del contrato puede agregar tokens y modificar feeds.
+### Requisitos Previos
+- Asegúrate de tener [Foundry](https://github.com/foundry-rs/foundry) instalado.
 
-### Eventos
-- **Deposit:** Se emite cuando se realiza un depósito.
-- **Withdrawal:** Se emite cuando se realiza un retiro.
-- **TokenSupported:** Se emite cuando se agrega un nuevo token al catálogo.
-- **ChainlinkFeedUpdated:** Se emite cuando se actualiza el feed de precios Chainlink.
+### Compilación
 
-## Funciones
-
-### Depósitos
-```solidity
-function deposit(address _tokenAddress, uint256 _tokenAmount) external payable;
-```
-
-### Retiros
-```solidity
-function withdraw(address _tokenAddress, uint256 _tokenAmount) public nonReentrant;
-```
-
-### Gestión de Tokens
-```solidity
-function addSupportedToken(address tokenAddress, address priceFeedAddress, uint8 decimals) external onlyOwner;
-```
-
-### Consultas y Actualizaciones
-```solidity
-function setFeeds(address _tokenAddress, address _feedAddress) external onlyOwner;
-function contractBalanceInUSD() public view returns (uint256 balance_);
-```
-
-## Instalación
-
-Clone the repository:
 ```bash
-git clone <repository-url>
+forge build
 ```
 
-Install dependencies:
+### Pruebas
+
+Ejecutar las pruebas para asegurarse de que todo funcione como se espera:
+
 ```bash
-cd KipuBankV3
-npm install
+forge test
 ```
 
-Deploy the contract:
+### Despliegue
 
-Utiliza un entorno de desarrollo como Remix o Hardhat para desplegar el contrato en una red Ethereum.
+Para desplegar el contrato, puedes usar el siguiente comando de Foundry. Asegúrate de reemplazar `DEPLOYER_PRIVATE_KEY`, `BANK_CAP` y `UNISWAP_ROUTER` con los valores apropiados en el archivo .env.
 
-## Licencia
-Este proyecto está bajo la licencia MIT.
+- **Deploy local**_
+```bash
+# Deployay nodo local con foundry
+anvil
+
+# Deploy contracto kipubank en nodo local
+forge script script/Deploy.s.sol:DeployKipuBankV3 --rpc-url http://127.0.0.1:8545 -vvvv --broadcast
+```
+- **Deploy en Sepolia**
+```bash
+# deploy sepolia testnet y verificacion con foundry
+forge script script/Deploy.s.sol:DeployKipuBankV3 --rpc-url https://ethereum-sepolia-rpc.publicnode.com --broadcast --verify --etherscan-api-key <CAMBIAR_POR_TU_API_KEY> -vvv
+```
+
+## Funciones del Contrato
+
+### Depósito
+
+#### `deposit(address _tokenAddress, uint256 _tokenAmount, uint256 minUsdcOut, uint256 deadline)`
+Deposita ETH o tokens ERC-20 y los cambia automáticamente por tokens USDC a través de Uniswap V2. La cantidad mínima de USDC a recibir debe especificarse.
+
+### Retiro
+
+#### `withdraw(uint256 _amountUsdc)`
+Retira la cantidad especificada de USDC del saldo del usuario en el contrato.
+
+## Eventos
+- **DepositSwapped**: Emitido cuando un depósito es cambiado por USDC.
+- **DepositUsdc**: Emitido cuando se deposita USDC directamente en el banco.
+- **WithdrawUsdc**: Emitido cuando ocurre un retiro.
+- **RouterUpdated**: Emitido cuando se actualiza la dirección del router de Uniswap.
+- **UsdcUpdated**: Emitido cuando se actualiza la dirección del contrato del token USDC.
+
+
+
+## Desarrollo
+
+Para desarrollar en este proyecto, clona el repositorio e instala las dependencias:
+
+```bash
+git clone <repository_url>
+cd kipubankv3
+forge build
+```
