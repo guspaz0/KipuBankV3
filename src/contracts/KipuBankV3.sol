@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
 /*//////////////////
@@ -11,13 +11,11 @@ import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.s
         Libraries
 ///////////////////////*/
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {Commands} from "../helpers/Commands.sol";
 
 /*///////////////////////
         Interfaces
 ///////////////////////*/
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {AggregatorV3Interface} from "@chainlink/contracts/interfaces/feeds/AggregatorV3Interface.sol";
 import {IUniswapV2Router02} from "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import {IUniswapV2Factory} from "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 
@@ -67,9 +65,6 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
 
     /// @notice contador depositos
     uint128 public depositosCount = 0;
-
-    /// @notice chainlink price feed;
-    AggregatorV3Interface public feeds;
 
     /*//////////////////////////////
             Errores
@@ -150,7 +145,7 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
     );
 
     /// @notice Evento que se emite cuando se actualiza la direccion del feed de precios Chainlink.
-    event ChainlinkFeedUpdated(address _old_feed, address _new_feed);
+    event UsdcUpdated(address _old_feed, address _new_feed);
 
     /// @notice Evento que se emite cuando se agrega un token al catalogo.
     event TokenSupported(
@@ -170,17 +165,16 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
     /**
      * @dev Constructor del contrato
      * @param _bankCap El límite máximo de fondos que el banco puede manejar (en USD)
-     * @param _priceFeedAddress La dirección del feed de precios Chainlink ETH/USD
+     * @param _router La dirección del feed de precios Chainlink ETH/USD
+     * @param _usdc LA direccion del token usdc
      */
     constructor(
         uint256 _bankCap,
-        address _priceFeedAddress,
         address _router,
         address _usdc
     ) Ownable(msg.sender) {
         if (_bankCap == 0) revert ConstructorError("_bankCap");
         bankCap = _bankCap;
-        feeds = AggregatorV3Interface(_priceFeedAddress);
         i_router = IUniswapV2Router02(_router);
         i_factory = IUniswapV2Factory(i_router.factory());
         WETH = i_router.WETH();
@@ -402,27 +396,7 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
         if (_usdc == address(0)) revert ZeroAddress();
         address old = s_usdc;
         s_usdc = _usdc;
-        emit ChainlinkFeedUpdated(old, _usdc);
-    }
-    /**
-     * @notice function para actualizar el Feed de precios Chainlink
-     * @param _feedAddress la direccion del nuevo feed de precios Chainlink.
-     * @dev solo debe ser llamado por el propietario
-     */
-    function setFeeds(
-        address _feedAddress
-    ) external onlyOwner {
-        // CHECKS 
-        if (_feedAddress == ETH_ADDRESS) revert OracleCompromised();
-
-        address oldFeed = address(feeds);
-        if (oldFeed == _feedAddress) revert OracleCompromised();
-
-        // Effects
-        feeds = AggregatorV3Interface(_feedAddress);
-
-        // INTERACTIONS
-        emit ChainlinkFeedUpdated(oldFeed, _feedAddress);
+        emit UsdcUpdated(old, _usdc);
     }
 
     /*///////////////////////////////

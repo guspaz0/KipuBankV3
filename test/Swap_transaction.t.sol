@@ -228,7 +228,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         MockERC20 NEW_usdc = new MockERC20("ns_usdc", "ns_usdc", 6);
         vm.prank(owner);
         vm.expectEmit(true, true, false, true);
-        emit KipuBankV3.ChainlinkFeedUpdated(address(s_usdc), address(NEW_usdc));
+        emit KipuBankV3.UsdcUpdated(address(s_usdc), address(NEW_usdc));
         bank.setUsdc(address(NEW_usdc));
         assertEq(address(bank.s_usdc()), address(NEW_usdc));
 

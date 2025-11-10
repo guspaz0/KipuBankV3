@@ -82,7 +82,6 @@ abstract contract KipuBankV3BaseTest is Test {
         vm.startPrank(owner);
         bank = new KipuBankV3(
             BANK_CAP, 
-            address(s_clFeed),
             address(router),
             address(s_usdc)
             );
