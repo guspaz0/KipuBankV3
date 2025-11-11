@@ -1,7 +1,7 @@
 # KipuBankV3 Smart Contract
 
-- [Deploy contrato sepolia testnet](https://sepolia.etherscan.io/address/0x860f78cb13382e354be1436823d5a33bf9c9bd61)
-- Contract address: `0x860f78cb13382e354be1436823d5a33bf9c9bd61`
+- [Deploy contrato sepolia testnet](https://sepolia.etherscan.io/address/0xc6c1f0d932d08db334263165caa6eda21c53452f)
+- Contract address: `0xc6c1f0d932d08db334263165caa6eda21c53452f`
 
 ## Descripción General
 

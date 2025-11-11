@@ -13,7 +13,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
     uint256 s_deadline = block.timestamp + 1 hours;
 
 // -------- Constructor / estado inicial --------
-    function testInitialState() public {
+    function testInitialState() public view {
         assertEq(address(bank.i_router()), address(router));
         assertEq(address(bank.s_usdc()), address(s_usdc));
         assertEq(bank.bankCap(),BANK_CAP);
@@ -21,7 +21,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
     }
 
     // -------- hasDirects_usdcPair / helpers --------
-    function testHasDirects_usdcPair() public {
+    function testHasDirects_usdcPair() public view {
         assertTrue(bank.hasDirects_usdcPair(address(s_dai)));
         assertTrue(bank.hasDirects_usdcPair(address(s_wbtc)));
         assertFalse(bank.hasDirects_usdcPair(address(0xDEAD))); // sin par
@@ -67,18 +67,18 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
     // -------- Depósito ETH --------
     function testDepositEth_Success_Emits() public {
         uint256 ethIn = 1e3; // 4e6 usdc
-        uint256 minOut = ethIn * 3601;
+        uint256 minOut = ethIn * 3000;
 
         uint256 s_usdcBefore = s_usdc.balanceOf(address(bank));
         vm.startPrank(user1);
         vm.expectEmit();
         // user, tokenIn(0), amountIn, s_usdcReceived (match on topics/data)
-        emit KipuBankV3.DepositSwapped(user1, address(0), ethIn, 4e6);
+        emit KipuBankV3.DepositSwapped(user1, address(0), ethIn, 3e6);
         bank.deposit{value: ethIn}(address(0), ethIn, minOut);
 
         uint256 received = s_usdc.balanceOf(address(bank)) - s_usdcBefore;
 
-        assertEq(received, 4e6);
+        assertEq(received, 3e6);
         assertEq(bank.balanceOfUsdc(user1), received);
         assertEq(bank.totalUsdc(), received);
     }
@@ -178,8 +178,8 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         // ------- Contador Depositos ----------
     function testDepositCounter() public {
         vm.startPrank(user1);
-        uint256 ethIn = 1e3; // 4e6 usdc
-        uint256 minOut = ethIn * 3601;
+        uint256 ethIn = 1e3; // 3e6 usdc
+        uint256 minOut = 3e6;
         uint256 depositCount = 0;
         bank.deposit{value: ethIn}(address(0), ethIn, minOut);
         depositCount++;
@@ -189,6 +189,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         depositCount++;
         // fallback deposit
         (bool success, ) = address(bank).call{value: ethIn}("");
+        assertEq(success, true);
         depositCount++;
 
         assertEq(bank.depositosCount(), depositCount);
@@ -248,8 +249,8 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
     }
     function testWithdrawCounter() public {
         vm.startPrank(user1);
-        uint256 ethIn = 1e5; // 4e6 usdc
-        uint256 minOut = ethIn * 3601;
+        uint256 ethIn = 1e3; // 3e6 usdc
+        uint256 minOut = 3e6;
         uint256 depositCount = 0;
         bank.deposit{value: ethIn}(address(0), ethIn, minOut);
         depositCount++;
@@ -259,6 +260,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         depositCount++;
         // fallback deposit
         (bool success, ) = address(bank).call{value: ethIn}("");
+        assertEq(success, true);
         depositCount++;
 
         assertEq(bank.depositosCount(), depositCount);

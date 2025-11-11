@@ -62,7 +62,7 @@ abstract contract KipuBankV3BaseTest is Test {
         // Rates
         router.setTokenRate(address(s_dai), 1e18); // 1 DAI -> 1 USDC
         router.setTokenRate(address(s_wbtc), 70_000e18); // 1 WBTC -> 70k USDC
-        router.setEthRate(4_000e18); // 1 ETH  -> 3000 USDC
+        router.setEthRate(3_000e18); // 1 ETH  -> 3000 USDC
 
         // Pairs directos a USDC
         factory.setPair(address(s_dai), address(s_usdc), address(0x111));
