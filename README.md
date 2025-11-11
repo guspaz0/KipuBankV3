@@ -1,7 +1,7 @@
 # KipuBankV3 Smart Contract
 
-- [Deploy contrato sepolia testnet](https://sepolia.etherscan.io/address/0x1f66459e0054ba61707af12b930a9cfd883ecb48)
-- Contract address: `0x1f66459e0054Ba61707af12b930A9CFd883Ecb48`
+- [Deploy contrato sepolia testnet](https://sepolia.etherscan.io/address/0xc21d8fdfc86b758262e62fb3b0eab6fe632893c5)
+- Contract address: `0xc21d8Fdfc86b758262E62fb3b0eAB6fE632893C5`
 
 ## Descripción General
 
@@ -30,6 +30,9 @@ Ejecutar las pruebas para asegurarse de que todo funcione como se espera:
 
 ```bash
 forge test
+
+## ver la cobertura de las pruebas
+forge coverage
 ```
 
 ### Despliegue

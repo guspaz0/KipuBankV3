@@ -178,6 +178,25 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         bank.deposit(address(s_dai), 1_000e9, 1, s_deadline);
         vm.stopPrank();
     }
+        // ------- Contador Depositos ----------
+    function testDepositCounter() public {
+        vm.startPrank(user1);
+        uint256 ethIn = 1e3; // 4e6 usdc
+        uint256 minOut = ethIn * 3601;
+        uint256 depositCount = 0;
+        bank.deposit{value: ethIn}(address(0), ethIn, minOut, s_deadline);
+        depositCount++;
+        bank.deposit(address(s_usdc), 1234, minOut, s_deadline);
+        depositCount++;
+        bank.deposit(address(s_dai), 1e9, minOut, s_deadline);
+        depositCount++;
+        // fallback deposit
+        (bool success, ) = address(bank).call{value: ethIn}("");
+        depositCount++;
+
+        assertEq(bank.depositosCount(), depositCount);
+        vm.stopPrank();
+    }
 
     // -------- Withdraw --------
     function testWithdraws_usdc_Success_Emits() public {
@@ -228,6 +247,37 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
             )
         );
         bank.withdraw(2000);
+        vm.stopPrank();
+    }
+    function testWithdrawCounter() public {
+        vm.startPrank(user1);
+        uint256 ethIn = 1e3; // 4e6 usdc
+        uint256 minOut = ethIn * 3601;
+        uint256 depositCount = 0;
+        bank.deposit{value: ethIn}(address(0), ethIn, minOut, s_deadline);
+        depositCount++;
+        bank.deposit(address(s_usdc), 1234, minOut, s_deadline);
+        depositCount++;
+        bank.deposit(address(s_dai), 1e9, minOut, s_deadline);
+        depositCount++;
+        // fallback deposit
+        (bool success, ) = address(bank).call{value: ethIn}("");
+        depositCount++;
+
+        assertEq(bank.depositosCount(), depositCount);
+
+        uint256 withdrawCount = 0;
+
+        bank.withdraw(1000);
+        withdrawCount++;
+        bank.withdraw(1000);
+        withdrawCount++;
+        bank.withdraw(1000);
+        withdrawCount++;
+        bank.withdraw(1000);
+        withdrawCount++;
+
+        assertEq(bank.withdrawalCount(), withdrawCount);
         vm.stopPrank();
     }
 

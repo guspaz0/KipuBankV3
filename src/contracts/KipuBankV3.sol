@@ -208,6 +208,7 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
             balanceOfUsdc[msg.sender] += amountUsdc;
             totalUsdc += amountUsdc;
         }
+        depositosCount++;
 
         emit DepositUsdc(msg.sender, amountUsdc);
     }
@@ -230,6 +231,7 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
             address(this),
             deadline
         );
+        depositosCount++;
 
         uint256 usdcAfter = IERC20(s_usdc).balanceOf(address(this));
         uint256 received = usdcAfter - usdcBefore;
@@ -280,6 +282,7 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
             address(this),
             deadline
         );
+        depositosCount++;
 
         uint256 usdcAfter = IERC20(s_usdc).balanceOf(address(this));
         uint256 received = usdcAfter - usdcBefore;
