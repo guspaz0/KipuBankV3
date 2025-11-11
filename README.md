@@ -1,7 +1,7 @@
 # KipuBankV3 Smart Contract
 
-- [Deploy contrato sepolia testnet](https://sepolia.etherscan.io/address/0xc6c1f0d932d08db334263165caa6eda21c53452f)
-- Contract address: `0xc6c1f0d932d08db334263165caa6eda21c53452f`
+- [Deploy contrato sepolia testnet](https://sepolia.etherscan.io/address/0x3dd806b0bd67211c29f1a7fa5597e45d2a953b34)
+- Contract address: `0x3DD806b0bD67211C29F1a7fA5597E45D2A953B34`
 
 ## Descripción General
 
@@ -58,7 +58,9 @@ forge script script/Deploy.s.sol:DeployKipuBankV3 --rpc-url https://ethereum-sep
 ### Depósito
 
 #### `deposit(address _tokenAddress, uint256 _tokenAmount, uint256 minUsdcOut, uint256 deadline)`
-Deposita ETH o tokens ERC-20 y los cambia automáticamente por tokens USDC a través de Uniswap V2. La cantidad mínima de USDC a recibir debe especificarse.
+Deposita ETH o tokens ERC-20 y los cambia automáticamente por tokens USDC a través de Uniswap V2. La cantidad mínima de USDC a recibir debe especificarse. 
+    - Si va a depositar Tokens ERC20 (no ETH), dar `approve` a la direcion del contrato previamente. 
+    - Si va a depositar Eth, especificar la direccion 0x, en `_tokenAddress`.
 
 ### Retiro
 

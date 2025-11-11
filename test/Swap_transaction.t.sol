@@ -236,15 +236,15 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
 
     function testWithdraws_usdc_Revert_Limit() public {
         vm.startPrank(user1);
-        bank.deposit(address(s_usdc), 100e6, s_minOut);
+        bank.deposit(address(s_usdc), 1e10, s_minOut);
         vm.expectRevert(
             abi.encodeWithSelector(
                 KipuBankV3.WithdrawalLimitExceeded.selector,
                 bank.withdrawLimitUSD(),
-                2000
+                1e10
             )
         );
-        bank.withdraw(2000);
+        bank.withdraw(10000000000);
         vm.stopPrank();
     }
     function testWithdrawCounter() public {

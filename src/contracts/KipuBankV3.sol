@@ -52,7 +52,7 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
     mapping(address => uint256) public balanceOfUsdc;
 
     /// @notice Límite por transacción de retiro (en usdc)
-    uint256 public immutable withdrawLimitUSD = 1000;
+    uint256 public immutable withdrawLimitUSD = 1000000000;
 
     /// @notice constante para almacenar la dirección del token ETH en el sistema
     address constant ETH_ADDRESS = address(0);
