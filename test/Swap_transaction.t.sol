@@ -30,7 +30,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
     function testRemainingCapacity() public {
         assertEq(bank.remainingCapacity(),BANK_CAP);
         vm.prank(user1);
-        bank.deposit(address(s_usdc), 1000, s_minOut, s_deadline);
+        bank.deposit(address(s_usdc), 1000, s_minOut);
         assertEq(bank.remainingCapacity(),BANK_CAP - 1000);
     }
 
@@ -40,7 +40,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         vm.startPrank(user1);
         vm.expectEmit(true, false, false, true);
         emit KipuBankV3.DepositUsdc(user1, amt);
-        bank.deposit(address(s_usdc), amt, s_minOut, s_deadline);
+        bank.deposit(address(s_usdc), amt, s_minOut);
 
         assertEq(bank.balanceOfUsdc(user1), amt);
         assertEq(bank.totalUsdc(), amt);
@@ -51,16 +51,16 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
     function testDeposits_usdc_Revert_ZeroAmount() public {
         vm.prank(user1);
         vm.expectRevert(KipuBankV3.ZeroAmount.selector);
-        bank.deposit(address(s_usdc),0,1, s_deadline);
+        bank.deposit(address(s_usdc), 0, s_minOut);
     }
 
     function testDeposit_usdc_Revert_CapExceeded() public {
         vm.startPrank(user1);
-        bank.deposit(address(s_usdc), BANK_CAP - 100, s_minOut, s_deadline);
+        bank.deposit(address(s_usdc), BANK_CAP - 100, s_minOut);
         vm.expectRevert(
             abi.encodeWithSelector(KipuBankV3.BankCapLimitExceeded.selector, BANK_CAP)
         );
-        bank.deposit(address(s_usdc),200,s_minOut, s_deadline);
+        bank.deposit(address(s_usdc),200,s_minOut);
         vm.stopPrank();
     }
 
@@ -74,7 +74,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         vm.expectEmit();
         // user, tokenIn(0), amountIn, s_usdcReceived (match on topics/data)
         emit KipuBankV3.DepositSwapped(user1, address(0), ethIn, 4e6);
-        bank.deposit{value: ethIn}(address(0), ethIn, minOut, s_deadline);
+        bank.deposit{value: ethIn}(address(0), ethIn, minOut);
 
         uint256 received = s_usdc.balanceOf(address(bank)) - s_usdcBefore;
 
@@ -88,24 +88,24 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         uint256 minOut = 3_500e6; // mayor a lo que da el rate
         vm.prank(user1);
         vm.expectRevert(bytes("slip"));
-        bank.deposit{value: ethIn}(address(0), ethIn, minOut, block.timestamp + 1 hours);
+        bank.deposit{value: ethIn}(address(0), ethIn, minOut);
     }
 
     function testDepositEth_Revert_ZeroAmount() public {
         vm.prank(user1);
         vm.expectRevert(KipuBankV3.ZeroAmount.selector);
-        bank.deposit{value: 0}(address(0), 0, s_minOut, s_deadline);
+        bank.deposit{value: 0}(address(0), 0, s_minOut);
     }
 
     function testDepositEth_Revert_CapExceeded_ByPrecheckOrFinal() public {
         // Llenamos casi todo el BANK_CAP
         vm.startPrank(user1);
-        bank.deposit(address(s_usdc), BANK_CAP - 1000, s_minOut, s_deadline);
+        bank.deposit(address(s_usdc), BANK_CAP - 1000, s_minOut);
         // minOut ya superaría el BANK_CAP
         vm.expectRevert(
             abi.encodeWithSelector(KipuBankV3.BankCapLimitExceeded.selector, BANK_CAP)
         );
-        bank.deposit{value: 1 ether}(address(0), 1 ether, s_minOut, s_deadline);
+        bank.deposit{value: 1 ether}(address(0), 1 ether, s_minOut);
         vm.stopPrank();
     }
 
@@ -118,8 +118,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         bank.deposit(
             address(s_dai),
             s_daiIn,
-            1,
-            block.timestamp + 1 hours
+            1
         );
         vm.stopPrank();
         assertEq(bank.balanceOfUsdc(user1), 1e12);
@@ -133,8 +132,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         bank.deposit(
             address(s_wbtc),
             s_wbtcIn,
-            60_000e4,
-            block.timestamp + 1 hours
+            60_000e4
         );
 
         assertEq(bank.balanceOfUsdc(user1), 70_000e6);
@@ -148,13 +146,13 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         vm.expectRevert(
             abi.encodeWithSelector(KipuBankV3.UnsupportedToken.selector, XYZ)
         );
-        bank.deposit(XYZ, 100, 1, block.timestamp + 1 hours);
+        bank.deposit(XYZ, 100, 1);
     }
 
     function testDepositToken_Revert_ZeroAmount() public {
         vm.prank(user1);
         vm.expectRevert(KipuBankV3.ZeroAmount.selector);
-        bank.deposit(address(s_dai), 0, 0, block.timestamp + 1 hours);
+        bank.deposit(address(s_dai), 0, 0);
     }
 
     function testDepositToken_Revert_Slippage() public {
@@ -163,19 +161,18 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         bank.deposit(
             address(s_dai),
             1e3,
-            200e6,
-            block.timestamp + 1 hours
+            200e6
         );
     }
 
     function testDepositToken_Revert_CapExceeded_Precheck() public {
         vm.startPrank(user1);
         uint256 depositUsdc = BANK_CAP - 1_000e6;
-        bank.deposit(address(s_usdc), depositUsdc, s_minOut, s_deadline);
+        bank.deposit(address(s_usdc), depositUsdc, s_minOut);
         vm.expectRevert(
             abi.encodeWithSelector(KipuBankV3.BankCapLimitExceeded.selector, BANK_CAP)
         );
-        bank.deposit(address(s_dai), 1_000e9, 1, s_deadline);
+        bank.deposit(address(s_dai), 1_000e9, 1);
         vm.stopPrank();
     }
         // ------- Contador Depositos ----------
@@ -184,11 +181,11 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         uint256 ethIn = 1e3; // 4e6 usdc
         uint256 minOut = ethIn * 3601;
         uint256 depositCount = 0;
-        bank.deposit{value: ethIn}(address(0), ethIn, minOut, s_deadline);
+        bank.deposit{value: ethIn}(address(0), ethIn, minOut);
         depositCount++;
-        bank.deposit(address(s_usdc), 1234, minOut, s_deadline);
+        bank.deposit(address(s_usdc), 1234, minOut);
         depositCount++;
-        bank.deposit(address(s_dai), 1e9, minOut, s_deadline);
+        bank.deposit(address(s_dai), 1e9, minOut);
         depositCount++;
         // fallback deposit
         (bool success, ) = address(bank).call{value: ethIn}("");
@@ -203,7 +200,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
         uint256 deposit = 2_000e6;
         uint256 withdraw = 1000;
         vm.startPrank(user1);
-        bank.deposit(address(s_usdc),deposit, s_minOut, s_deadline);
+        bank.deposit(address(s_usdc),deposit, s_minOut);
 
         vm.expectEmit(true, false, false, true);
         emit KipuBankV3.WithdrawUsdc(user1, withdraw, deposit-withdraw);
@@ -216,7 +213,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
 
     function testWithdraws_usdc_Revert_ZeroAmount() public {
         vm.prank(user1);
-        bank.deposit(address(s_usdc), 1, s_minOut, s_deadline);
+        bank.deposit(address(s_usdc), 1, s_minOut);
         vm.prank(user1);
         vm.expectRevert(KipuBankV3.ZeroAmount.selector);
         bank.withdraw(0);
@@ -224,7 +221,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
 
     function testWithdraws_usdc_Revert_InsufficientBalance() public {
         vm.startPrank(user1);
-        bank.deposit(address(s_usdc), 100e6, s_minOut, s_deadline);
+        bank.deposit(address(s_usdc), 100e6, s_minOut);
         vm.expectRevert(
             abi.encodeWithSelector(
                 KipuBankV3.InsufficientUserBalance.selector,
@@ -238,7 +235,7 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
 
     function testWithdraws_usdc_Revert_Limit() public {
         vm.startPrank(user1);
-        bank.deposit(address(s_usdc), 100e6, s_minOut, s_deadline);
+        bank.deposit(address(s_usdc), 100e6, s_minOut);
         vm.expectRevert(
             abi.encodeWithSelector(
                 KipuBankV3.WithdrawalLimitExceeded.selector,
@@ -251,14 +248,14 @@ contract TokenTransactionTest is KipuBankV3BaseTest {
     }
     function testWithdrawCounter() public {
         vm.startPrank(user1);
-        uint256 ethIn = 1e3; // 4e6 usdc
+        uint256 ethIn = 1e5; // 4e6 usdc
         uint256 minOut = ethIn * 3601;
         uint256 depositCount = 0;
-        bank.deposit{value: ethIn}(address(0), ethIn, minOut, s_deadline);
+        bank.deposit{value: ethIn}(address(0), ethIn, minOut);
         depositCount++;
-        bank.deposit(address(s_usdc), 1234, minOut, s_deadline);
+        bank.deposit(address(s_usdc), 1234, minOut);
         depositCount++;
-        bank.deposit(address(s_dai), 1e9, minOut, s_deadline);
+        bank.deposit(address(s_dai), 1e9, minOut);
         depositCount++;
         // fallback deposit
         (bool success, ) = address(bank).call{value: ethIn}("");

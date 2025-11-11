@@ -176,9 +176,9 @@ contract KipuBankV3 is Ownable, ReentrancyGuard {
     function deposit(
         address _tokenAddress,
         uint256 _tokenAmount,
-        uint256 minUsdcOut,
-        uint256 deadline
+        uint256 minUsdcOut
     ) external payable nonReentrant {
+        uint256 deadline = block.timestamp + 1 hours;
         if (_tokenAddress == ETH_ADDRESS) {
             if (_tokenAmount != msg.value)
                 revert DepositAmountMismatch(
